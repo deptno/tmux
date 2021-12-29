@@ -42,7 +42,7 @@ battery_percent()
       ;;
 
     Darwin)
-      echo $(pmset -g batt | grep -Eo '[0-9]?[0-9]?[0-9]%')
+      printf "%03d%%" $(pmset -g batt | grep -Eo '[0-9]?[0-9]?[0-9]%' | cut -d '%' -f1)
       ;;
 
     FreeBSD)
@@ -113,11 +113,11 @@ main()
   bat_perc=$(battery_percent)
 
   if [ -z "$bat_stat" ]; then # Test if status is empty or not
-    echo "$bat_label $bat_perc"
+    echo "$bat_label$bat_perc"
   elif [ -z "$bat_perc" ]; then # In case it is a desktop with no battery percent, only AC power
-    echo "$bat_label $bat_stat"
+    echo "$bat_label$bat_stat"
   else
-    echo "$bat_label $bat_stat $bat_perc"
+    echo "$bat_label$bat_stat $bat_perc"
   fi
 }
 

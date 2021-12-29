@@ -17,8 +17,7 @@ get_percent()
       cpuvalue=$(ps -A -o %cpu | awk -F. '{s+=$1} END {print s}')
       cpucores=$(sysctl -n hw.logicalcpu)
       cpuusage=$(( cpuvalue / cpucores ))
-      percent="$cpuusage%"
-      normalize_percent_len $percent
+      printf " %03d%%" $cpuusage
       ;;
 
     CYGWIN*|MINGW32*|MSYS*|MINGW*)
@@ -49,7 +48,7 @@ main() {
   else
     cpu_label=$(get_tmux_option "@dracula-cpu-usage-label" "CPU")
     cpu_percent=$(get_percent)
-    echo "$cpu_label $cpu_percent"
+    echo "$cpu_label$cpu_percent"
   fi
   sleep $RATE
 }
