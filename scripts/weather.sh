@@ -64,7 +64,7 @@ main()
 {
   # process should be cancelled when session is killed
   if ping -q -c 1 -W 1 ipinfo.io &>/dev/null; then
-    echo "$(display_weather)$(display_location)"
+    echo "$(display_weather)"
   else
     echo "Location Unavailable"
   fi
