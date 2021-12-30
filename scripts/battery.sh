@@ -67,7 +67,7 @@ battery_status()
       ;;
 
     Darwin)
-      status=$(pmset -g batt | sed -n 2p | cut -d ';' -f 2 | tr -d " ")
+      status=$(pmset -g batt | sed -n 2p | cut -d ';' -f 1-| tr -d " ")
       ;;
 
     FreeBSD)
@@ -82,19 +82,59 @@ battery_status()
       ;;
   esac
 
-  case $status in
-    discharging|Discharging)
-      echo ''
-      ;;
-    high)
-      echo ''
-      ;;
-    charging)
-      echo 'AC'
+  case $(uname -s) in
+    Darwin)
+      case $status in
+        *discharging*)
+          printf "ﮤ " 
+          echo $status | cut -d ';' -f 3| grep -Eo "\d{1,2}:\d{1,2}"
+          ;;
+        *"not charging"*)
+          echo ''
+          ;;
+        *charging*)
+          case $1 in
+            100%|09*%)
+              echo ''
+              ;;
+            08*%|07*%)
+              echo ''
+              ;;
+            06*%|05*%|04*%)
+              echo 
+              ;;
+            03*%|02*%|010%)
+              echo ''
+              ;;
+            00*%)
+              echo ''
+              ;;
+            *)
+              echo ''
+              ;;
+          esac
+          ;;
+        *)
+          echo ''
+          ;;
+      esac
       ;;
     *)
-      echo 'AC'
-      ;;
+    case $status in
+      discharging|Discharging)
+        echo ''
+        ;;
+      high)
+        echo ''
+        ;;
+      charging)
+        echo 'AC'
+        ;;
+      *)
+        echo 'AC'
+        ;;
+    esac
+    ;;
   esac
   ### Old if statements didn't work on BSD, they're probably not POSIX compliant, not sure
   # if [ $status = 'discharging' ] || [ $status = 'Discharging' ]; then
@@ -109,8 +149,8 @@ battery_status()
 main()
 {
   bat_label=$(get_tmux_option "@dracula-battery-label" "♥")
-  bat_stat=$(battery_status)
   bat_perc=$(battery_percent)
+  bat_stat=$(battery_status $bat_perc)
 
   if [ -z "$bat_stat" ]; then # Test if status is empty or not
     echo "$bat_label$bat_perc"
