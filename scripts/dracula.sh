@@ -200,6 +200,13 @@ main()
     fi
   done
 
+  # i18n
+  if [ -z $(defaults read ~/Library/Preferences/com.apple.HIToolbox.plist AppleSelectedInputSources | grep '"Bundle ID" = "com.apple.inputmethod.') ]; then
+    tmux set-option -ga status-right "#[fg=${green},bg=${gray}] A"
+  else
+    tmux set-option -ga status-right "#[fg=${gray},bg=${green}] 한"
+  fi
+
   # Window option
   if $show_powerline; then
     tmux set-window-option -g window-status-current-format "#[fg=${gray},bg=${dark_purple}]${left_sep}#[fg=${white},bg=${dark_purple}] #I #W${current_flags} #[fg=${dark_purple},bg=${gray}]${left_sep}"
